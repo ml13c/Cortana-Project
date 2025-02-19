@@ -16,6 +16,7 @@ TODO:
         -maps
     -add more animations
     -weather visualization
+    -make it so it automatically updates itself w pip
 '''
 import threading
 import time
