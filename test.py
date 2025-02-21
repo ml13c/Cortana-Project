@@ -16,7 +16,6 @@ TODO:
         -maps
     -add more animations
     -weather visualization
-    -make it so it automatically updates itself w pip
 '''
 import threading
 import time
@@ -39,27 +38,29 @@ system or if you want you can just add it to the code for simplicity. IF RASPBER
 add to code for simplicity. It uses the openweathermap api to get the weather data via city name or current location.
 """
 def get_weather_data(city_text):
-    user_api = os.environ['current_weather_data']
+    user_api = os.environ['current_weather_data']#add environmemtal variable(current_weather_data) by clicking new and pasating the actual key value
     complete_api_link = "https://api.openweathermap.org/data/2.5/weather?q=" + city_text + "&appid=" + user_api
     api_link = requests.get(complete_api_link)
     api_data = api_link.json()
 
     try:
-        # Extract weather information
+        
+        #Extract weather information. There is more to get but these are just what I think is important for now.
         temp_city = (1.8 * (api_data['main']['temp'] - 273.15) + 32)
         weather_desc = api_data['weather'][0]['description']
         hmdt = api_data['main']['humidity']
         wind_spd = api_data['wind']['speed']
+        #maybe add uv index later
         date_time = datetime.now().strftime("%d %b %Y | %I:%M:%S %p")
 
         # Format weather information as a string
+        # maybe format it into different strings to make it easier to modify in pyghame/seperate window
         weather_info = f"{city_text.upper()}  || {date_time}\n"
         weather_info += "{:.2f} F\n".format(temp_city)
         weather_info += f"{weather_desc}\n"
         weather_info += f"Humidity  : {hmdt}%\n"
         weather_info += f"Wind Speed : {wind_spd} kmph"
         
-
         return weather_info
     except KeyError as e:
         print(f"Error occurred while fetching weather data: {e}")
@@ -67,7 +68,9 @@ def get_weather_data(city_text):
 '''
 I could probably make this a function that just get the lan and lon and then pass that to the weather api for get weather data
 so I will add that to the todo list. Other than finding the current location to determine the city it works the same as the other function.
-So I think I can pass it as a parameter to the get weather data function.
+So I think I can pass it as a parameter to the get weather data function.**MUST DO BY 2/22***
+This would bea good idea to do just change it to use latlon to find city and
+pass to get weather data.
 '''
 def get_latlonweather_data():
     user_api = os.environ['current_weather_data']
@@ -120,8 +123,7 @@ def send_weather(weather):
         s.sendto(weather.encode(), ('localhost', 9998))
 '''
 This is where the main stuff starts to happen
-'''
-'''
+
 This is where the animations start to occur. This is where the animated model knows what to do based on the test action set to a type of command.
 It can detect weather based on how the input is formatted. If it is formatted as "weather in city" it will use the city name to get the weather data.
 Right now I need to figure out a way to exit and return back to listen for keyword but that should be easy enough. 
@@ -172,13 +174,14 @@ def listen_for_command():
                     model="gpt-4o-mini",
                     messages=[{"role": "user", "content": cortana_input}],
                 )
-                # Output GPT-3.5 response
-                print("GPT-4 Response:", response.choices[0].message.content)
+                # Output GPT 4 mini Response
+                print("GPT 4 mini Response:", response.choices[0].message.content)
         except Exception as e:
             print(f"Exception in listen for command found error: {e}")
 '''
 Pretty much its just a while loop that keeps rununing listening for the keyword. Once it is detected it will start the actual program.
-I can proably shorten it but I wanted to format it to read commands before the keyword was actually detected.
+I can proably shorten it but I wanted to format it to read commands before the keyword was actually detected. Even then there is probably a way to do so 
+but due to how long it might take to debug i first want to fully implement and perfect other functionalities
 '''
 def listen_for_keyword():
     global testaction
@@ -220,8 +223,8 @@ def listen_for_keyword():
                             model="gpt-4o-mini",
                             messages=[{"role": "user", "content": after_cortana}],
                         )
-                        # Output GPT-3.5 response
-                        print("GPT-4 Response:", response.choices[0].message.content)
+                        # Output GPT 4 mini Response
+                        print("GPT 4 mini Response:", response.choices[0].message.content)
                 else:
                     after_cortana = ""
         except Exception as e:
