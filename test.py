@@ -25,13 +25,14 @@ from datetime import datetime
 import geocoder
 import requests
 import socket
-from g4f.client import Client
+import openai
+from openai import OpenAI
 
-client = Client()
 testaction = "still"
 keyword_detected = False
 voices_process = None
-
+openai.api_key = os.environ['OPENAI_API_KEY']
+client = OpenAI()
 """
 This uses an api key in the os. I have removed it for security reasons. You can add it back in by adding it to the os environment variables on your
 system or if you want you can just add it to the code for simplicity. IF RASPBERRY PI OS(linux distrobution) IS DIFFERENT it would be best to 
@@ -128,6 +129,15 @@ This is where the animations start to occur. This is where the animated model kn
 It can detect weather based on how the input is formatted. If it is formatted as "weather in city" it will use the city name to get the weather data.
 Right now I need to figure out a way to exit and return back to listen for keyword but that should be easy enough. 
 '''
+cortana_system_prompt = {
+    "role": "system",
+    "content": (
+        "You are Cortana from Halo, a highly intelligent AI personal assistant. "
+        "You are helpful, witty, and polite. You assist the user with general questions, "
+        "provide information, and engage in friendly conversation. "
+        "Respond as Cortana would, with a calm, logical, and occasionally humorous tone."
+    )
+}
 def listen_for_command():
     global testaction
     global keyword_detected
@@ -172,10 +182,14 @@ def listen_for_command():
                 # Pass user input to GPT-3.5 for further processing
                 response = client.chat.completions.create(
                     model="gpt-4o-mini",
-                    messages=[{"role": "user", "content": cortana_input}],
+                    messages=[
+                        cortana_system_prompt,
+                        {"role": "user", "content": cortana_input}],
                 )
                 # Output GPT 4 mini Response
-                print("GPT 4 mini Response:", response.choices[0].message.content)
+                gpt4omini_response = response.choices[0].message.content
+                print(response.model)
+                print("GPT 4 mini Response:", gpt4omini_response)
         except Exception as e:
             print(f"Exception in listen for command found error: {e}")
 '''
@@ -221,10 +235,14 @@ def listen_for_keyword():
                         # Pass user input to GPT-3.5 for further processing
                         response = client.chat.completions.create(
                             model="gpt-4o-mini",
-                            messages=[{"role": "user", "content": after_cortana}],
+                            messages=[
+                                cortana_system_prompt,
+                                {"role": "user", "content": after_cortana}],
                         )
                         # Output GPT 4 mini Response
-                        print("GPT 4 mini Response:", response.choices[0].message.content)
+                        gpt4omini_response = response.choices[0].message.content
+                        print(response.model)
+                        print("GPT 4 mini Response:", gpt4omini_response)
                 else:
                     after_cortana = ""
         except Exception as e:
