@@ -76,7 +76,7 @@ weather_receiver_thread = threading.Thread(target=receive_weather, daemon=True)
 action_receiver_thread.start()
 weather_receiver_thread.start()
 
-BG = (50, 50, 50)
+BG = (0, 0, 0)
 
 # Make a list storing each frame for animations
 animation_list = []
@@ -108,6 +108,7 @@ action = 6
 last_update = pygame.time.get_ticks()
 animation_cooldown = 150
 frame = 0
+next_action = None
 animation_active = False
 
 def listen_for_input():
