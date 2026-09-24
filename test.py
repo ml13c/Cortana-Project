@@ -3,16 +3,16 @@
 This is the main script for the Cortana-like assistant. The script works to how I imagine an alexa works. Once it is powered on it is always on
 unlees turned off by the main power source. It is always listening for the keyword "cortana" and once it hears it it will start the animation
 and wait for a command. If it hears the keyword "exit" it will stop the animation and go back to listening for the keyword. Ideally 
-this is connected to the internet so that APIS all work correctly. G4F is used for the AI responses and is the main communication with the user if
-not doing commands.
+this is connected to the internet so that APIS all work correctly. GPT(GPT FOR FREE WAS USED BEFORE NOW ITS JUST OPEN AI) is used for the AI responses and is the main communication with the user if
+not doing commands. 
 """
 '''
 TODO:
-    -weather optimization
+    -weather optimization(visual)
     -make the animations work correctly with the commands(do animation and return to idle)
     -add weather os to environmental variables***
     -add more commands
-        -youtube video player
+        -youtube video player(chromium)
         -maps
     -add more animations
     -weather visualization
@@ -66,12 +66,11 @@ def get_weather_data(city_text):
     except KeyError as e:
         print(f"Error occurred while fetching weather data: {e}")
         return "Failed to fetch weather data for " + city_text
+
 '''
-I could probably make this a function that just get the lan and lon and then pass that to the weather api for get weather data
-so I will add that to the todo list. Other than finding the current location to determine the city it works the same as the other function.
-So I think I can pass it as a parameter to the get weather data function.**MUST DO BY 2/22***
-This would bea good idea to do just change it to use latlon to find city and
-pass to get weather data.
+I decided to keep the latitude and longitude based weather data separate from the city-based weather data in since someone
+could say whats the weatherand want the weather for their current location rather than a specific city.
+Also this would be useful for providing location based weather updates automatically.
 '''
 def get_latlonweather_data():
     user_api = os.environ['current_weather_data']
@@ -107,21 +106,25 @@ def get_latlonweather_data():
     except KeyError as e:
         print(f"Error occurred while fetching weather data: {e}")
         return "Failed to fetch weather data for " + latlon_location
+
 '''
-This sends the standard 'testaction' to the animation handler. This is how the model knows what to do based on commands I give or infer.
-The plan is to have a set of idle animations rather than just one so I will probably make it into a seperate array and have it run randomly through
-one of those animations when idle.
+This sends the standard 'testaction' to the animation handler. 
+This is how the model knows what to do based on commands I give or infer.
+The plan is to have a set of idle animations rather than just one so I will probably make it into a seperate array
+and have it run randomly through one of those animations when idle.
+Once it completes, it can return to the idle state and be ready for the next command or keep cycling through animations.
 '''
 def send_testaction(action):
     with socket.socket(socket.AF_INET, socket.SOCK_DGRAM) as s:
         s.sendto(action.encode(), ('localhost', 9999))
+
 '''
 This sends the weather data to the animation handler. This is how the model knows what to display based on the weather data I give it.
-This data is then formatted and displayed. I can probably break this down so I can display other things that arent weather but I will see.
 '''
 def send_weather(weather):
     with socket.socket(socket.AF_INET, socket.SOCK_DGRAM) as s:
         s.sendto(weather.encode(), ('localhost', 9998))
+        
 '''
 This is where the main stuff starts to happen
 
@@ -138,6 +141,24 @@ cortana_system_prompt = {
         "Respond as Cortana would, with a calm, logical, and occasionally humorous tone."
     )
 }
+
+'''
+This is the main loop where Cortana listens for commands and responds accordingly.
+    Working Functions as of now:
+        normal mode(default) is chat gpt api for general conversation and queries
+        weather in <city>
+        weather (current location)
+        exit (out of cortana/AI assistant mode and go back to PI5)
+    TO ADD:
+        spotify functionality
+        youtube functionality(via chromium)
+        Google Gemeni(via chromium) as desktop helper for when i want to type
+        more animations(idle, sleeping, seasonal, etc.)
+        
+It checks for specific keywords like "weather in", "weather", and "exit" to determine the appropriate action.
+Based on the detected command, it either fetches weather data, sends test actions to the animation handler, or exits the loop.
+'''
+
 def listen_for_command():
     global testaction
     global keyword_detected
@@ -145,12 +166,12 @@ def listen_for_command():
     while keyword_detected:
         try:
             cortana_input = input("Listen for command - Input: ")
-            print("Cortana reads:", cortana_input)
+            print("Cortana reads:", cortana_input) # used for debugging purposes
             if "weather in" in cortana_input:
                 testaction = "weather"
                 send_testaction(testaction)
-                city_text = cortana_input.split("weather in", 1)[1].strip()
-                print(f"Fetching weather for {city_text}")
+                city_text = cortana_input.split("weather in", 1)[1].strip()  #debugging purposes
+                print(f"Fetching weather for {city_text}")# used for debugging purposes
                 #weather based on city
                 weather_info = get_weather_data(city_text)
                 send_weather(weather_info)

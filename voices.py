@@ -14,13 +14,15 @@ weather_box_x = 470
 weather_box_y = 80
 weather_font = pygame.font.Font('freesansbold.ttf', 12)  # Font for weather information
 
-SCREEN_WIDTH = 700
-SCREEN_HEIGHT = 700
-# Set up the display
-screen = pygame.display.set_mode((SCREEN_WIDTH, SCREEN_HEIGHT))
+# screen dimensions for pi window(HARDWARE : Hoysund 7 inch ISP Display 800x480)
+SCREEN_WIDTH = 800
+SCREEN_HEIGHT = 480
+
+# Set up the display borderless
+screen = pygame.display.set_mode((SCREEN_WIDTH, SCREEN_HEIGHT), pygame.NOFRAME)
 pygame.display.set_caption("Pygame Window")
 
-testaction = "still"
+testaction = "still"#set innitial animation/action to sit still as default not what the last action was
 weather_info = ""#set weather info as blank initially
 weather_activated = weather_info
 
@@ -96,7 +98,7 @@ step_counter = 0
 for action in actions:
     temp_img_list = []
     for i in range(animation_frames[action]):
-        image = sprite_sheet.get_image(step_counter, 500, 500, 1.4)
+        image = sprite_sheet.get_image(step_counter, 500, 500, .96)
         temp_img_list.append(image)
         step_counter += 1
     animation_list.append(temp_img_list)
@@ -155,7 +157,10 @@ while running:
                 animation_active = False  # Mark the animation as inactive
 
     # Show frame image
-    screen.blit(animation_list[action][frame], (0, 0))
+    # screen.blit(animation_list[action][frame], (0, 0))
+    current_image = animation_list[action][frame]
+    image_rect = current_image.get_rect(center=(SCREEN_WIDTH // 2, SCREEN_HEIGHT // 2))
+    screen.blit(current_image, image_rect)
     if weather_activated:
         # Display weather information inside the box
         pygame.draw.rect(screen, (0, 163, 225), (weather_box_x, weather_box_y, weather_box_width, weather_box_height))
