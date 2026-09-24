@@ -27,6 +27,7 @@ import requests
 import socket
 import openai
 from openai import OpenAI
+from browser import open_site, close_browser
 
 testaction = "still"
 keyword_detected = False
@@ -167,6 +168,7 @@ def listen_for_command():
         try:
             cortana_input = input("Listen for command - Input: ")
             print("Cortana reads:", cortana_input) # used for debugging purposes
+            
             if "weather in" in cortana_input:
                 testaction = "weather"
                 send_testaction(testaction)
@@ -177,6 +179,7 @@ def listen_for_command():
                 send_weather(weather_info)
                 print(weather_info)
                 print("Command - testaction sent as", testaction)
+                
             elif "weather" in cortana_input:
                 testaction = "weather"
                 send_testaction(testaction)
@@ -186,6 +189,7 @@ def listen_for_command():
                 send_weather(weather_info)
                 print(weather_info)
                 print("Command - testaction sent as", testaction)
+                
             elif "exit" in cortana_input:
                 testaction = "dismiss"
                 send_testaction(testaction)
@@ -197,6 +201,25 @@ def listen_for_command():
                     voices_process.terminate()
                     voices_process = None
                 break  # Exit the loop when "exit" is detected
+            
+            elif cortana_input.lower() == "youtube":
+                print("Opening YouTube")
+                open_site("youtube")
+
+            elif cortana_input.lower() == "gemini":
+                print("Opening Gemini")
+                open_site("gemini")
+
+            elif cortana_input.lower() in [
+                "close browser",
+                "close youtube",
+                "close gemini",
+                "go back"
+            ]:
+                print("Closing browser")
+                close_browser()
+                        
+            #chatGPT handles all other interactions
             else:
                 testaction = "cross"
                 send_testaction(testaction)
@@ -277,7 +300,8 @@ def animation():
     voices_process = subprocess.Popen(["python", "voices.py"])
 '''
 This is the main loop that runs the program. It starts the animation process and then listens for commands. Once the keyword is detected it will
-start the main loop. Based off of certain keywords
+start the main loop. Based off of certain keywords. I took out voice input due to keep the process simpler and focused on text-based commands
+since i do that more. if you wish to do that just incoporate nest_asyncio and use it for voice input and watch out for the loops i have running.
 '''
 def main_loop():
     global keyword_detected
