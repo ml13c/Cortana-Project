@@ -57,11 +57,13 @@ def get_weather_data(city_text):
 
         # Format weather information as a string
         # maybe format it into different strings to make it easier to modify in pyghame/seperate window
-        weather_info = f"{city_text.upper()}  || {date_time}\n"
-        weather_info += "{:.2f} F\n".format(temp_city)
-        weather_info += f"{weather_desc}\n"
-        weather_info += f"Humidity  : {hmdt}%\n"
-        weather_info += f"Wind Speed : {wind_spd} kmph"
+        weather_info = f"{city_text.upper()}"
+        weather_info += f"\n{date_time}"
+        weather_info += "\n"
+        weather_info += f"\nTemp: {temp_city:.0f} F"
+        weather_info += f"\nSky:  {weather_desc.title()}"
+        weather_info += f"\nHumidity: {hmdt}%"
+        weather_info += f"\nWind: {wind_spd:.0f} km/h"
         
         return weather_info
     except KeyError as e:
@@ -95,13 +97,15 @@ def get_latlonweather_data():
         windspd_latlon = latlon_data['wind']['speed']
         latlon_location = latlon_data['name']
         #format
-        weather_info = f"{latlon_location.upper()}  || {date_time}\n"
-        weather_info += "{:.2f} F\n".format(temp_latlon)
-        weather_info += "Max: {:.2f} F\n".format(tempmax_latlon)
-        weather_info += "Min: {:.2f} F\n".format(tempmin_latlon)
-        weather_info += f"{weather_latlon}\n"
-        weather_info += f"Humidity  : {hmdt_latlon}%\n"
-        weather_info += f"Wind Speed : {windspd_latlon} kmph"
+        weather_info = f"{latlon_location.upper()}"
+        weather_info += f"\n{date_time}"
+        weather_info += "\n"
+        weather_info += f"\nTemp: {temp_latlon:.0f} F"
+        weather_info += f"\nHigh: {tempmax_latlon:.0f} F"
+        weather_info += f"\nLow:  {tempmin_latlon:.0f} F"
+        weather_info += f"\nSky:  {weather_latlon.title()}"
+        weather_info += f"\nHumidity: {hmdt_latlon}%"
+        weather_info += f"\nWind: {windspd_latlon:.0f} km/h"
         
         return weather_info
     except KeyError as e:

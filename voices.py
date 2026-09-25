@@ -7,12 +7,15 @@ import spritessheet
 # Initialize Pygame
 pygame.init()
 
-# Creating weather box
-weather_box_width = 180
-weather_box_height = 200
-weather_box_x = 470
-weather_box_y = 80
-weather_font = pygame.font.Font('freesansbold.ttf', 12)  # Font for weather information
+# Weather text position on the black right-side area
+weather_x = 585
+weather_y = 70
+WEATHER_LINE_SPACING = 20  # Adjust the line spacing for the weather text as needed
+# Slightly larger font for cleaner display
+weather_font = pygame.font.SysFont("dejavusans", 18, bold=False)
+
+# Neon turquoise color
+WEATHER_COLOR = (0, 224, 208)
 
 # screen dimensions for pi window(HARDWARE : Hoysund 7 inch ISP Display 800x480)
 SCREEN_WIDTH = 800
@@ -163,13 +166,12 @@ while running:
     image_rect = current_image.get_rect(center=(SCREEN_WIDTH // 2, SCREEN_HEIGHT // 2))
     screen.blit(current_image, image_rect)
     if weather_activated:
-        # Display weather information inside the box
-        pygame.draw.rect(screen, (0, 163, 225), (weather_box_x, weather_box_y, weather_box_width, weather_box_height))
-        wrapped_lines = wrap_text(weather_activated, weather_font, weather_box_width - 20)
-        for i, line in enumerate(wrapped_lines):
-            text_surface = weather_font.render(line, True, (255, 255, 255))  # Render text with white color
+        weather_lines = weather_activated.splitlines()
+
+        for i, line in enumerate(weather_lines):
+            text_surface = weather_font.render(line, True, WEATHER_COLOR)
             text_rect = text_surface.get_rect()
-            text_rect.topleft = (weather_box_x + 10, weather_box_y + 10 + (i * 20))  # Adjust position and spacing
+            text_rect.topleft = (weather_x, weather_y + i * WEATHER_LINE_SPACING)
             screen.blit(text_surface, text_rect)
     
     # Event handler
