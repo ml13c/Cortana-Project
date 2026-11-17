@@ -2,3 +2,7 @@ _pycache_
 .vscode
 har_and_cookies
 .gitattributes
+venv/
+__pycache__/
+*.pyc
+venv/
