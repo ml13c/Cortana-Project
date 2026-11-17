@@ -87,28 +87,6 @@ The main Python process handles commands, API requests, and application control.
 
 Small UDP messages are used to tell the display which animation or information to show.
 
----
-
-## Project Structure
-
-```text
-Cortana-Project/
-│
-├── main.py                 # Assistant logic and command routing
-├── voices.py               # Pygame interface and animations
-├── browser.py              # Chromium / web application control
-├── spritessheet.py         # Sprite sheet frame handling
-│
-├── assets/
-│   └── Cortanabit-animationframes.png
-│
-├── requirements.txt
-├── .gitignore
-└── README.md
-```
-
----
-
 ## Weather Interface
 
 Weather information is retrieved from OpenWeatherMap and sent to the display process.
